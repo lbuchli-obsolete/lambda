@@ -1,0 +1,5 @@
+:: Y = λf.(λx.f (x x)) (λx.f (x x))
+:: id = λx.x
+
+...and this is the main function
+:: main = Y id
