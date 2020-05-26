@@ -12,7 +12,7 @@ import Language
 import Util
 
 parse :: String -> String -> Result Prog
-parse name inp = to_res (first print $ Text.Parsec.parse prog name inp)
+parse name inp = Trace "Parsing..." $ to_res (first print $ Text.Parsec.parse prog name inp)
   where
     to_res (Left msg) = Error msg
     to_res (Right p)  = Success p

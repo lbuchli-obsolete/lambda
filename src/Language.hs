@@ -13,9 +13,12 @@ newtype Def = Def (Symbol, Expr)
 data Expr = EDef Symbol Expr
           | EAp Expr Expr
           | EVar Symbol
-  deriving Show
 type Symbol = String
 
+instance Show Expr where
+  show (EDef name body) = "λ" ++ name ++ "." ++ show body
+  show (EAp a b) = "(" ++ show a ++ " " ++ show b ++ ")"
+  show (EVar name) = name
 
 -----------------------------------------------------------------
 --                  Interpreter state / IR                     --
@@ -24,7 +27,6 @@ type Symbol = String
 data Node = NAp Addr Addr
           | NSuperComb Symbol Expr
           | NInd Addr
-  deriving Show
 
 type State = (SStack, SDump, SHeap, SGlobals, SStats)
 type SStack = [Addr]
@@ -40,3 +42,10 @@ statsIncSteps = (+1)
 statsGetSteps :: SStats -> Int
 statsGetSteps = id
 
+showAddr :: Addr -> String
+showAddr addr = "#<" ++ show addr ++ ">"
+
+instance Show Node where
+  show (NAp a b) = "(" ++ showAddr a ++ " " ++ showAddr b ++ ")"
+  show (NSuperComb name body) = ":: " ++ name ++ " = " ++ show body
+  show (NInd addr) = showAddr addr

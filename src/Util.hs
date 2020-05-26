@@ -53,26 +53,34 @@ mEmpty = []
 --                              Result                              --
 ----------------------------------------------------------------------
 
-data Result a = Success a | Error (IO ())
+data Result a = Success a | Trace String (Result a) | Error (IO ())
 
 instance Functor Result where
   fmap f (Success a) = Success (f a)
+  fmap f (Trace _ r) = fmap f r
   fmap _ (Error msg) = Error msg
 
 instance Applicative Result where
   pure x = Success x
-  (<*>) (Success f) (Success a) = Success (f a)
-  (<*>) (Error msg) _           = Error msg
-  (<*>) _           (Error msg) = Error msg
+  (<*>) (Success f) (Success a)  = Success (f a)
+  (<*>) (Trace _ rf) ra          = rf <*> ra
+  (<*>) (Error msg) _            = Error msg
+  (<*>) rf          (Trace _ ra) = rf <*> ra
+  (<*>) _           (Error msg)  = Error msg
 
 instance Monad Result where
-  (>>=) (Success a) f = f a
-  (>>=) (Error msg) _ = Error msg
+  (>>=) (Success a) f   = f a
+  (>>=) (Trace msg a) f = Trace msg (a >>= f)
+  (>>=) (Error msg) _   = Error msg
 
--- TODO very ugly. Is there a way around 'IO ()' error messages that doesn't
--- look ugly?
-printResult :: Show a => Result a -> IO ()
-printResult (Error msg) = do
+type ShowTrace = Bool
+printResult :: Show a => ShowTrace -> Result a -> IO ()
+printResult _ (Error msg) = do
   putStr "ERROR: "
   msg
-printResult (Success s) = print s
+printResult _ (Success s) = print s
+printResult True (Trace msg r) = do
+  putStr "TRACE: "
+  putStrLn msg
+  printResult True r
+printResult False (Trace _ r) = printResult False r

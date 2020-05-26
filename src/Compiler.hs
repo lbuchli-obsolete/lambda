@@ -4,7 +4,7 @@ import Language
 import Util
 
 compile :: Prog -> Result State
-compile prog = Success (initial_stack, initial_dump, initial_heap, globals, statsInitial)
+compile prog = Trace "Compiling..." $  Success (initial_stack, initial_dump, initial_heap, globals, statsInitial)
   where
     (initial_heap, globals) = buildInitialHeap prog
     initial_stack = [mLookup globals "main"]
