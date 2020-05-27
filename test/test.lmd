@@ -1,5 +1,8 @@
-:: Y = λf.(λx.f (x x)) (λx.f (x x))
+a simple identity function
 :: id = λx.x
 
+three in church encoding
+:: three = λf.λx.f (f (f x))
+
 ...and this is the main function
-:: main = Y id
+:: main = three id

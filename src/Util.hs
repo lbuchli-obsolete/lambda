@@ -11,7 +11,7 @@ hInitial   :: Heap a
 hAlloc     :: Heap a -> a -> (Heap a, Addr)
 hUpdate    :: Heap a -> Addr -> a -> Heap a
 hFree      :: Heap a -> Addr -> Heap a
-hLookup    :: Heap a -> Addr -> a
+hLookup    :: Heap a -> Addr -> Result a
 hAddresses :: Heap a -> [Addr]
 hSize      :: Heap a -> Int
 hNull      :: Addr
@@ -34,10 +34,10 @@ hIsNull a = a == 0
 
 type Map a b = [(a, b)]
 
-mLookup :: Eq a => Show a => Map a b -> a -> b
-mLookup ((k, v):bs) k' | k == k' = v
+mLookup :: Eq a => Show a => Map a b -> a -> Result b
+mLookup ((k, v):bs) k' | k == k' = Success v
                        | k /= k' = mLookup bs k'
-mLookup m k'                     = error ("Can't find key " ++ show k' ++ " in map " ++ show (mDomain m))
+mLookup m k'                     = Error (putStr $ "Can't find key " ++ show k' ++ " in map " ++ show (mDomain m))
 
 mDomain :: Map a b -> [a]
 mDomain mMap = [key | (key, _) <- mMap]
