@@ -1,8 +1,17 @@
 a simple identity function
 :: id = λx.x
 
+one in church encoding
+:: 1 = λf.λx.f x
+
 three in church encoding
-:: three = λf.λx.f (f (f x))
+:: 3 = λf.λx.f (f (f x))
+
+multiply numerals using church encoding
+-:: * = λm.λn.λf.λx.m (n f) x
+
+add numerals using church encoding
+:: + = λm.λn.λf.λx.m f (n f x)
 
 ...and this is the main function
-:: main = three id
+:: main = (+ 3 1) id

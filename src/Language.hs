@@ -27,7 +27,7 @@ instance Show Expr where
 data Node = NAp Addr Addr
           | NSuperComb Expr
           | NInd Addr
-          | NDef Symbol
+          | NDef Symbol Expr
 
 type State = (SStack, SDump, SHeap, SGlobals, SStats)
 type SStack = [Addr]
@@ -44,10 +44,10 @@ statsGetSteps :: SStats -> Int
 statsGetSteps = id
 
 showAddr :: Addr -> String
-showAddr addr = "#<" ++ show addr ++ ">"
+showAddr addr = "#" ++ show addr
 
 instance Show Node where
   show (NAp a b) = "(" ++ showAddr a ++ " " ++ showAddr b ++ ")"
   show (NSuperComb body) = "SC " ++ show body
   show (NInd addr) = showAddr addr
-  show (NDef name) = "Definition " ++ name
+  show (NDef name body) = "Definition " ++ name ++ " => " ++ show body
